@@ -1,0 +1,65 @@
+{
+  "coordenadoraNome": "Coordenadora Jacke",
+  "cargo": "Coordenação de Cursos EAD",
+  "instituicao": "Faculdade Anhanguera",
+  "localAtendimento": "Sala da Coordenação",
+  "senhaAdmin": "jacke2026",
+  "telefoneCoord": "(00) 90000-0000",
+  "emailCoord": "coordenacao.ead@anhanguera.com",
+  "diasSemanaAtendimento": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "duracaoAtendimentoMinutos": 20,
+  "horarioAtendimento": {
+    "inicio": "18:00",
+    "fim": "20:00"
+  },
+  "limiteDiasFuturos": 30,
+  "statusPermitidos": [
+    "Agendado",
+    "Concluído",
+    "Ausente"
+  ],
+  "motivos": [
+    "Estágio",
+    "Portal",
+    "Dependência e adaptação",
+    "Mediadores",
+    "TCC",
+    "Dúvidas acadêmicas",
+    "Colação de grau e diploma",
+    "Outro"
+  ],
+  "cursos": [
+    "Administração",
+    "Análise e Desenvolvimento de Sistemas",
+    "Ciências Contábeis",
+    "Educação Física (Licenciatura)",
+    "Gestão de Recursos Humanos",
+    "Gestão Financeira",
+    "Logística",
+    "Marketing",
+    "Pedagogia",
+    "Processos Gerenciais",
+    "Serviço Social",
+    "Outro Curso de Graduação"
+  ],
+  "semestres": [
+    "1º Semestre",
+    "2º Semestre",
+    "3º Semestre",
+    "4º Semestre",
+    "5º Semestre",
+    "6º Semestre",
+    "7º Semestre",
+    "8º Semestre",
+    "9º Semestre",
+    "10º Semestre",
+    "Concluinte / Formando"
+  ],
+  "datasBloqueadas": []
+}

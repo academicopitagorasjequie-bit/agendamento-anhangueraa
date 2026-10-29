@@ -1,0 +1,148 @@
+/* Estilos personalizados para o Sistema de Agendamento Anhanguera EAD */
+
+:root {
+  --primary-color: #f15a24;
+  --primary-hover: #ea580c;
+  --primary-dark: #c2410c;
+  --anhanguera-orange: #f15a24;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Slots de Horários com Cor Laranja Anhanguera */
+.time-slot {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.time-slot:hover:not(.occupied):not(.selected) {
+  border-color: #f97316;
+  background-color: #fff7ed;
+  transform: translateY(-2px);
+}
+
+.time-slot.selected {
+  background: linear-gradient(135deg, #f97316, #ea580c) !important;
+  color: #ffffff !important;
+  border-color: #c2410c !important;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.4);
+  transform: translateY(-2px);
+  font-weight: 700;
+}
+
+.time-slot.occupied {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  border-color: #e5e7eb;
+  cursor: not-allowed;
+  text-decoration: line-through;
+  opacity: 0.65;
+}
+
+/* Badges de Status (Apenas Agendado, Concluído e Ausente) */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.status-agendado {
+  background-color: #ffedd5;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+}
+
+.status-concluido {
+  background-color: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.status-ausente {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+/* Transições suaves */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+}
+
+/* Otimização para Impressão do Relatório Diário e Comprovantes */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 10pt;
+  }
+
+  .no-print,
+  nav,
+  header.site-header,
+  footer,
+  .btn-print-hide {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .print-page {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    page-break-inside: auto;
+  }
+
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  th, td {
+    border: 1px solid #d1d5db !important;
+    padding: 6px 8px !important;
+    font-size: 9pt !important;
+  }
+
+  th {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+  }
+
+  .status-badge {
+    border: 1px solid #64748b !important;
+    background: none !important;
+    color: #000000 !important;
+  }
+}
+
+.print-only {
+  display: none;
+}

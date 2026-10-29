@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel da Coordenação EAD - Anhanguera</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- CABEÇALHO PARA IMPRESSÃO OFICIAL (A4) -->
+  <div class="print-only p-4 mb-4 border-b-2 border-slate-900">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-xl font-black uppercase tracking-wider text-slate-900">FACULDADE ANHANGUERA • RELATÓRIO DIÁRIO DE ATENDIMENTOS EAD</h1>
+        <p class="text-xs text-slate-700 font-semibold mt-0.5">Coordenação EAD • Coordenadora Jacke</p>
+      </div>
+      <div class="text-right text-xs text-slate-700">
+        <p><strong>Data da Agenda:</strong> <span class="print-data-alvo">-</span></p>
+        <p><strong>Horário de Atendimento:</strong> 18:00 às 20:00</p>
+        <p><strong>Emitido em:</strong> <span class="print-data-emissao">-</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CABEÇALHO DA INTERFACE (Laranja Anhanguera) -->
+  <header class="bg-gradient-to-r from-orange-600 via-orange-500 to-amber-600 text-white shadow-lg sticky top-0 z-40 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-white/20 text-white border border-white/30 flex items-center justify-center font-bold">
+          <i data-lucide="shield-check" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-black uppercase bg-black/20 px-2 py-0.5 rounded text-orange-100">Anhanguera</span>
+            <h1 class="text-lg font-bold">Painel da Coordenação EAD</h1>
+          </div>
+          <p class="text-xs text-orange-100">Atendimento Jacke • Relatório Diário de Agendamentos (18:00 às 20:00)</p>
+        </div>
+      </div>
+
+      <!-- Navegação de Abas & Ações -->
+      <div id="headerActions" class="hidden flex items-center gap-2">
+        <nav class="flex bg-black/20 p-1 rounded-xl text-xs font-medium">
+          <button id="tabRelatorioBtn" onclick="trocarAba('relatorio')" class="px-3 py-1.5 rounded-lg bg-white text-orange-700 font-bold shadow-sm transition flex items-center gap-1.5">
+            <i data-lucide="calendar-check" class="w-3.5 h-3.5"></i>
+            <span>Relatório Diário</span>
+          </button>
+          <button id="tabGeralBtn" onclick="trocarAba('geral')" class="px-3 py-1.5 rounded-lg text-orange-100 hover:text-white transition flex items-center gap-1.5">
+            <i data-lucide="list-filter" class="w-3.5 h-3.5"></i>
+            <span>Histórico</span>
+          </button>
+          <button id="tabConfigBtn" onclick="trocarAba('config')" class="px-3 py-1.5 rounded-lg text-orange-100 hover:text-white transition flex items-center gap-1.5">
+            <i data-lucide="settings" class="w-3.5 h-3.5"></i>
+            <span>Configurações</span>
+          </button>
+        </nav>
+
+        <a href="/" target="_blank" title="Abrir página de agendamento" class="px-3 py-1.5 bg-black/20 hover:bg-black/30 text-white rounded-lg text-xs transition flex items-center gap-1 border border-white/20">
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          <span class="hidden sm:inline">Página de Agendamento</span>
+        </a>
+
+        <button onclick="fazerLogout()" title="Sair do painel" class="p-2 bg-black/30 hover:bg-black/40 text-white rounded-lg transition">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- TELA DE LOGIN / BLOQUEIO -->
+  <div id="loginScreen" class="flex-1 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-md w-full p-8 text-center">
+      <div class="w-16 h-16 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-orange-200">
+        <i data-lucide="lock" class="w-8 h-8"></i>
+      </div>
+      <span class="text-xs font-black uppercase text-orange-600 tracking-wider">Faculdade Anhanguera</span>
+      <h2 class="text-2xl font-bold text-slate-900 mt-1">Acesso da Coordenação</h2>
+      <p class="text-xs text-slate-500 mt-1 mb-6">Digite a senha para acessar o Relatório Diário de Agendamentos.</p>
+
+      <form id="formLogin" class="space-y-4">
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <i data-lucide="key-round" class="w-5 h-5"></i>
+          </div>
+          <input type="password" id="senhaAdmin" required placeholder="Digite a senha..."
+            class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-slate-800 text-sm outline-none transition placeholder:text-slate-400">
+        </div>
+
+        <button type="submit" id="btnLogin"
+          class="w-full py-3 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-bold rounded-xl text-sm transition shadow flex items-center justify-center gap-2">
+          <i data-lucide="unlock" class="w-4 h-4"></i>
+          <span>Entrar no Painel</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- CONTEÚDO PRINCIPAL DO PAINEL -->
+  <main id="painelContent" class="hidden flex-1 max-w-7xl mx-auto px-4 sm:px-6 py-6 w-full space-y-6">
+
+    <!-- ========================================== -->
+    <!-- ABA 1: RELATÓRIO DIÁRIO (FOCO PRINCIPAL) -->
+    <!-- ========================================== -->
+    <div id="abaRelatorio" class="space-y-6">
+      
+      <!-- Barra Superior de Controle de Data do Relatório -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-5 flex flex-col md:flex-row items-center justify-between gap-4 no-print">
+        <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+          <div class="flex items-center gap-2">
+            <i data-lucide="calendar" class="w-5 h-5 text-orange-600"></i>
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Data do Relatório:</span>
+          </div>
+
+          <input type="date" id="dataRelatorio" 
+            class="px-3.5 py-2 rounded-xl border border-slate-300 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-orange-500 outline-none bg-slate-50 cursor-pointer">
+
+          <!-- Atalhos rápidos de data -->
+          <div class="flex items-center gap-1.5">
+            <button onclick="mudarDataRelatorio(-1)" class="px-2.5 py-1.5 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition" title="Dia anterior">Ontem</button>
+            <button onclick="definirDataRelatorioHoje()" class="px-2.5 py-1.5 text-xs bg-orange-100 hover:bg-orange-200 text-orange-800 border border-orange-200 rounded-lg font-bold transition">Hoje</button>
+            <button onclick="mudarDataRelatorio(1)" class="px-2.5 py-1.5 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition" title="Próximo dia">Amanhã</button>
+          </div>
+        </div>
+
+        <!-- Ações do Relatório: Imprimir e Exportar CSV Corrigido -->
+        <div class="flex items-center gap-2.5 w-full md:w-auto justify-end">
+          <button onclick="window.print()" class="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow transition flex items-center gap-2">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            <span>Imprimir Relatório</span>
+          </button>
+
+          <button onclick="exportarCsvRelatorio()" id="btnExportarCsv" class="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow transition flex items-center gap-2">
+            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+            <span>Exportar CSV / Excel</span>
+          </button>
+
+          <button onclick="carregarRelatorioDiario()" class="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition" title="Atualizar dados">
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Cards de Métricas do Dia (Sem Confirmado e Sem Cancelado) -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 no-print">
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center font-bold">
+            <i data-lucide="users" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <span class="text-xs text-slate-500 font-medium">Total de Alunos</span>
+            <p class="text-2xl font-bold text-slate-900" id="cardTotalDia">0</p>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+            <i data-lucide="clock" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <span class="text-xs text-slate-500 font-medium">Agendados (Aguardando)</span>
+            <p class="text-2xl font-bold text-amber-600" id="cardAgendadosDia">0</p>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+            <i data-lucide="check-check" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <span class="text-xs text-slate-500 font-medium">Concluídos (Atendidos)</span>
+            <p class="text-2xl font-bold text-emerald-600" id="cardConcluidosDia">0</p>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center font-bold">
+            <i data-lucide="user-x" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <span class="text-xs text-slate-500 font-medium">Ausentes</span>
+            <p class="text-2xl font-bold text-slate-600" id="cardAusentesDia">0</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumo Rápido de Motivos do Dia -->
+      <div id="resumoMotivosDia" class="bg-orange-50/70 border border-orange-200 rounded-2xl p-4 text-xs text-orange-950 flex flex-wrap items-center gap-2 no-print">
+        <span class="font-bold flex items-center gap-1.5 text-orange-900"><i data-lucide="pie-chart" class="w-4 h-4 text-orange-600"></i> Motivos de Atendimento do Dia:</span>
+        <div id="tagsMotivosDia" class="flex flex-wrap gap-2"></div>
+      </div>
+
+      <!-- TABELA / LISTA PRINCIPAL DO RELATÓRIO DIÁRIO -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden print-page">
+        <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between no-print">
+          <div>
+            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <span>Agenda de Atendimentos</span>
+              <span id="labelDataRelatorio" class="text-orange-700 bg-orange-100 px-2 py-0.5 rounded text-xs font-bold">-</span>
+            </h2>
+            <p class="text-xs text-slate-500 mt-0.5">Atendimentos das 18:00 às 20:00 • Coordenadora Jacke</p>
+          </div>
+        </div>
+
+        <!-- Tabela -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="bg-slate-50 text-slate-600 uppercase font-bold text-[11px] border-b border-slate-200">
+              <tr>
+                <th class="py-3 px-4">Horário</th>
+                <th class="py-3 px-4">Aluno / CPF</th>
+                <th class="py-3 px-4">Curso & Semestre</th>
+                <th class="py-3 px-4">Motivo do Atendimento</th>
+                <th class="py-3 px-4">Telefone</th>
+                <th class="py-3 px-4">Status</th>
+                <th class="py-3 px-4 text-right no-print">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaRelatorioCorpo" class="divide-y divide-slate-100">
+              <!-- Gerado via JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mensagem de lista vazia -->
+        <div id="vazioRelatorio" class="hidden p-12 text-center text-slate-400">
+          <i data-lucide="calendar-x" class="w-12 h-12 mx-auto text-slate-300 mb-3"></i>
+          <h3 class="font-bold text-base text-slate-700">Nenhum atendimento agendado para esta data</h3>
+          <p class="text-xs text-slate-400 mt-1">Os agendamentos das 18:00 às 20:00 aparecerão aqui automaticamente.</p>
+        </div>
+
+        <!-- Rodapé do Relatório na Impressão Oficial -->
+        <div class="print-only mt-8 pt-6 border-t border-slate-300 text-xs text-slate-600">
+          <div class="flex justify-between items-end">
+            <div>
+              <p>Relatório oficial de atendimentos • Faculdade Anhanguera EAD</p>
+              <p>Presencial • Sala da Coordenação</p>
+            </div>
+            <div class="text-center w-64 border-t border-slate-800 pt-1">
+              <p class="font-bold text-slate-900">Coordenadora Jacke</p>
+              <p class="text-[10px] text-slate-500">Coordenação de Cursos EAD</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ABA 2: HISTÓRICO GERAL & BUSCA AVANÇADA -->
+    <!-- ========================================== -->
+    <div id="abaGeral" class="hidden space-y-6">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+        <h2 class="text-base font-bold text-slate-900">Histórico de Agendamentos</h2>
+        <p class="text-xs text-slate-500">Pesquise agendamentos anteriores por Nome, CPF ou Protocolo.</p>
+
+        <!-- Filtros -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Buscar (Nome, CPF, Protocolo)</label>
+            <input type="text" id="filtroGeralBusca" placeholder="Digite para buscar..."
+              class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-orange-500 outline-none">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Status</label>
+            <select id="filtroGeralStatus" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-orange-500 outline-none bg-white">
+              <option value="todos">Todos os Status</option>
+              <option value="Agendado">Agendado</option>
+              <option value="Concluído">Concluído</option>
+              <option value="Ausente">Ausente</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Motivo</label>
+            <select id="filtroGeralMotivo" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-orange-500 outline-none bg-white">
+              <option value="todos">Todos os Motivos</option>
+            </select>
+          </div>
+
+          <div class="flex items-end">
+            <button onclick="carregarHistoricoGeral()" class="w-full py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
+              <i data-lucide="filter" class="w-3.5 h-3.5"></i>
+              <span>Aplicar Filtros</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto pt-3 border-t border-slate-100">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-50 text-slate-600 uppercase font-bold text-[11px] border-b border-slate-200">
+              <tr>
+                <th class="py-2.5 px-3">Data / Hora</th>
+                <th class="py-2.5 px-3">Protocolo</th>
+                <th class="py-2.5 px-3">Aluno & CPF</th>
+                <th class="py-2.5 px-3">Curso & Semestre</th>
+                <th class="py-2.5 px-3">Motivo</th>
+                <th class="py-2.5 px-3">Status</th>
+                <th class="py-2.5 px-3 text-right">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaGeralCorpo" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ABA 3: CONFIGURAÇÕES DA COORDENAÇÃO -->
+    <!-- ========================================== -->
+    <div id="abaConfig" class="hidden space-y-6">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 max-w-2xl">
+        <h2 class="text-lg font-bold text-slate-900 mb-1">Configurações de Horário e Atendimento</h2>
+        <p class="text-xs text-slate-500 mb-6">Ajuste o horário e tempo de duração dos agendamentos.</p>
+
+        <form id="formConfig" class="space-y-5">
+          <div>
+            <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Nome da Coordenadora</label>
+            <input type="text" id="cfgNome" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-orange-500">
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Horário de Início</label>
+              <input type="time" id="cfgHorarioInicio" value="18:00" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Horário de Término</label>
+              <input type="time" id="cfgHorarioFim" value="20:00" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Duração de Cada Atendimento</label>
+            <select id="cfgDuracao" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white">
+              <option value="20">20 minutos (Padrão: 18:00, 18:20, 18:40, 19:00, 19:20, 19:40)</option>
+              <option value="30">30 minutos (18:00, 18:30, 19:00, 19:30)</option>
+              <option value="15">15 minutos</option>
+            </select>
+          </div>
+
+          <div class="pt-4 border-t border-slate-100">
+            <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Alterar Senha do Painel</label>
+            <input type="password" id="cfgNovaSenha" placeholder="Deixe em branco para manter a atual"
+              class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs">
+          </div>
+
+          <div class="pt-2">
+            <button type="submit" class="px-6 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow">
+              <i data-lucide="save" class="w-4 h-4"></i>
+              <span>Salvar Alterações</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL DE DETALHES & ANOTAÇÃO DO ATENDIMENTO -->
+  <div id="modalDetalhes" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl border border-slate-200">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div>
+          <span class="text-xs font-bold text-orange-600 uppercase" id="modalProtocolo">-</span>
+          <h3 class="text-lg font-bold text-slate-900" id="modalAlunoNome">-</h3>
+        </div>
+        <button onclick="fecharModalDetalhes()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs sm:text-sm">
+        <div class="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+          <div>
+            <span class="text-slate-400 text-xs">CPF:</span>
+            <p class="font-medium" id="modalCpf">-</p>
+          </div>
+          <div>
+            <span class="text-slate-400 text-xs">Telefone:</span>
+            <p class="font-medium" id="modalTelefone">-</p>
+          </div>
+          <div>
+            <span class="text-slate-400 text-xs">Curso:</span>
+            <p class="font-medium" id="modalCurso">-</p>
+          </div>
+          <div>
+            <span class="text-slate-400 text-xs">Semestre:</span>
+            <p class="font-medium" id="modalSemestre">-</p>
+          </div>
+          <div class="col-span-2">
+            <span class="text-slate-400 text-xs">Data & Horário:</span>
+            <p class="font-bold text-orange-600" id="modalDataHorario">-</p>
+          </div>
+        </div>
+
+        <div>
+          <span class="text-slate-400 text-xs font-bold uppercase">Motivo:</span>
+          <p class="font-semibold text-slate-900" id="modalMotivo">-</p>
+        </div>
+
+        <div>
+          <span class="text-slate-400 text-xs font-bold uppercase">Relato do Aluno:</span>
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-slate-700 text-xs mt-1" id="modalRelato">-</div>
+        </div>
+
+        <!-- Anotações da Coordenação -->
+        <div>
+          <label class="block text-slate-700 text-xs font-bold uppercase mb-1">
+            Parecer / Anotações da Coordenadora Jacke:
+          </label>
+          <textarea id="modalAnotacoes" rows="3" placeholder="Insira as observações do atendimento, orientações passadas ao aluno, etc."
+            class="w-full p-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-orange-500 outline-none"></textarea>
+        </div>
+
+        <!-- Alterar Status (Apenas Agendado, Concluído, Ausente) -->
+        <div>
+          <label class="block text-slate-700 text-xs font-bold uppercase mb-1">Status do Atendimento:</label>
+          <select id="modalStatusSelect" class="w-full p-2.5 rounded-xl border border-slate-300 text-xs bg-white font-bold text-slate-800">
+            <option value="Agendado">Agendado (Aguardando Atendimento)</option>
+            <option value="Concluído">Concluído (Atendimento Realizado)</option>
+            <option value="Ausente">Ausente (Aluno não compareceu)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+        <button type="button" onclick="fecharModalDetalhes()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-semibold transition">
+          Fechar
+        </button>
+        <button type="button" onclick="salvarAlteracoesModal()" class="px-5 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow">
+          <i data-lucide="check" class="w-4 h-4"></i>
+          <span>Salvar Registro</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/admin.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>
